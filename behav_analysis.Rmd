@@ -24,12 +24,12 @@ for (file in files) {
   data <- read.csv(file)
   data_list[[file]] <- data
 }
+
 ```
 
 ```{r}
 
 ```
-
 
 
 ```{r}
@@ -43,5 +43,22 @@ par_7 <- read.csv("../data/0194_experiment_data.csv")
 par_8 <- read.csv("../data/0195_experiment_data.csv")
 
 
+par_5$subject <- as.character(par_5$subject)
+par_6$subject <- as.character(par_6$subject)
+par_7$subject <- as.character(par_7$subject)
+par_8$subject <- as.character(par_8$subject)
+
+merged <- bind_rows(par_1, par_2, par_3, par_4, par_5, par_6, par_7, par_8)
 ```
+
+```{r}
+
+merged$target_duration_ms <- merged$target_duration_ms * 2
+
+merged$mask_duration_ms <- merged$mask_duration_ms * 2
+
+merged$fixation_duration_ms <- merged$fixation_duration_ms * 2
+
+```
+
 
