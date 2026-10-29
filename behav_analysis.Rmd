@@ -9,12 +9,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-pacman::p_load(dplyr, tidyverse)
+#containing purr, dplyr and ggplot 
+pacman::p_load(tidyverse)
 ```
 
-# Load the data
+## Load the data
 ```{r}
-path <- "../data" 
+path <- "~/Desktop/data"
 
 files <- list.files(path, pattern = "\\.csv$", full.names = TRUE)
 
@@ -26,22 +27,51 @@ for (file in files) {
 }
 ```
 
+## Checking variables 
 ```{r}
+#using purrr to check class type of first column 
+ map_chr(data_list, ~ class(.x[[1]]))
+
+##first four datasets have "subject" column as character, last four has it as integer
+```
+
+```{r}
+#changing "subject" column to be all characters
+data_list <- map(data_list, function(df) {
+  if (is.integer(df[[1]])) {
+    df[[1]] <- as.character(df[[1]])
+  }
+  df
+})
+
+#check it took effect
+map_chr(data_list, ~ class(.x[[1]]))
+```
+
+## Merging data 
+```{r}
+#merge dataframes in data_list
+merged <- bind_rows(data_list)
+
+#drop NA column 
+merged = subset(merged, select = -c(X))
+```
+
+```{r}
+# Aggregate data
+agg_data <- merged %>%
+  group_by(subjective_response) %>%
+  summarise(avg_reaction_time = mean(objective_response_time_ms), .groups = "drop")
+
+ggplot(agg_data, aes(x = subjective_response, y = avg_reaction_time)) +
+  xlab("PAS score") +
+  ylab("Reaction Time") +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Reaction time between subjects across PAS scores")+
+  theme_minimal()
 
 ```
 
 
 
-```{r}
-par_1 <- read.csv("../data/0188_experiment_data.csv")
-par_2 <- read.csv("../data/0189_experiment_data.csv")
-par_3 <- read.csv("../data/0190_experiment_data.csv")
-par_4 <- read.csv("../data/0191_experiment_data.csv")
-par_5 <- read.csv("../data/0192_experiment_data.csv")
-par_6 <- read.csv("../data/0193_experiment_data.csv")
-par_7 <- read.csv("../data/0194_experiment_data.csv")
-par_8 <- read.csv("../data/0195_experiment_data.csv")
-
-
-```
 
