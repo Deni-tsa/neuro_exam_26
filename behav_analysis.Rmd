@@ -53,11 +53,42 @@ merged <- bind_rows(par_1, par_2, par_3, par_4, par_5, par_6, par_7, par_8)
 
 ```{r}
 
+# Double the target duration
 merged$target_duration_ms <- merged$target_duration_ms * 2
 
+# Double the mask duration
 merged$mask_duration_ms <- merged$mask_duration_ms * 2
 
+# Double the fixation duration
 merged$fixation_duration_ms <- merged$fixation_duration_ms * 2
+
+```
+
+```{r}
+
+# Dropping the last empty column
+
+merged = subset(merged, select = -c(X))
+
+```
+
+```{r}
+
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+
+# Aggregate data
+agg_data <- merged %>%
+  group_by(subjective_response) %>%
+  summarise(avg_reaction_time = mean(objective_response_time_ms), .groups = "drop")
+
+ggplot(agg_data, aes(x = subjective_response, y = avg_reaction_time)) +
+  xlab("PAS score") +
+  ylab("Reaction Time") +
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Reaction time between subjects across PAS scores")+
+  theme_minimal()
 
 ```
 
